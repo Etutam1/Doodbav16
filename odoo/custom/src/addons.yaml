@@ -1,0 +1,10 @@
+muk/web:
+  - "*"
+oca/web:
+  - "*"
+oca/rest-framework:
+  - "*"
+oca/web-api:
+  - "*"
+oca/server-tools:
+  - "*"

@@ -1,0 +1,12 @@
+git+https://github.com/OCA/openupgradelib.git@master
+unicodecsv
+unidecode
+fastapi
+pydantic
+typing_extensions
+python-multipart
+ujson
+a2wsgi
+parse-accept-language
+secrets
+httpx
