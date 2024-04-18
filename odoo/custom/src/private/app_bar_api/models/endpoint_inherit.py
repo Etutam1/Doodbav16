@@ -1,10 +1,8 @@
 from fastapi import APIRouter
-from typing import  List
+
 from odoo import fields, models
 
 from ..routers import router
-
-# POS_entity = APIRouter()
 
 
 class FastapiEndpoint(models.Model):
@@ -12,10 +10,10 @@ class FastapiEndpoint(models.Model):
 
     app: str = fields.Selection(
         selection_add=[("POS_entity", "POS Entities")],
-        ondelete={"POS_entity": "cascade"}
+        ondelete={"POS_entity": "cascade"},
     )
 
-    def _get_fastapi_routers(self) -> List[APIRouter]:
+    def _get_fastapi_routers(self) -> list[APIRouter]:
         if self.app == "POS_entity":
             return [router]
         return super()._get_fastapi_routers()
