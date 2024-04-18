@@ -9,17 +9,14 @@ from odoo.addons.fastapi.schemas import PagedCollection
 
 from ..schemas.product import Product, Product2
 
-product_router = APIRouter(
-    tags=["products"],
-    responses={404: {"message: Not Found"}},
-)
+product_router = APIRouter(tags=["products"], responses={404: {"message": "Not Found"}})
 
 
 @product_router.get(
     "/products",
     response_model=PagedCollection[Product],
     response_model_exclude_unset=True,
-    status_code=201,
+    status_code=200,
 )
 async def get_products(
     env: Annotated[Environment, Depends(odoo_env)],
