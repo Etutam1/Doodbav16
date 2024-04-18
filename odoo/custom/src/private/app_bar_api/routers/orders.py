@@ -24,7 +24,7 @@ async def current_session(env: Annotated[Environment, Depends(odoo_env)]) -> Ses
     )
     if not session:
         raise HTTPException(status_code=204, detail="Not open session found")
-    # try:
-    #     return Session.model_validate(session[0])
-    # except ValueError as e:
-    #     raise HTTPException(status_code=500, detail=str(e))
+    try:
+        return Session.model_validate(session[0])
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
