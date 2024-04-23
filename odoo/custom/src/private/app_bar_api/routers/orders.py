@@ -39,16 +39,29 @@ def get_session(env):
 
 
 @order_router.post("/create_order", status_code=201)
-async def create_order(env: Annotated[Environment, Depends(odoo_env)], order: Order):
-    new_order = insert_order(env, order)
+async def create_order(
+    env: Annotated[Environment, Depends(odoo_env)], order_data: Order
+):
+    new_order = insert_order(env, order_data)
 
-    # for line in order_data.lines:
-    #     OrderLine.create({
-    #         'order_id': new_order.id,
-    #         'product_id': line.product_id,
-    #         'quantity': line.quantity,
-    #         # add other necessary fields as per your model
-    #     })
+    for line in order_data.products:
+        sequence_line = env["ir.sequence"].next_by_code("pos.order.line.pruebas")
+        env["pos.order.line"].create(
+            [
+                {
+                    "product_id": line.product_id,
+                    "order_id": new_order.id,
+                    "name": sequence_line,
+                    "full_product_name": line.name,
+                    "price_unit": line.price_unit,
+                    "qty": line.qty,
+                    "price_subtotal": line.price_subtotal,
+                    "price_subtotal_incl": line.price_subtotal_incl,
+                    "create_date": new_order.create_date,
+                    "write_date": new_order.write_date,
+                }
+            ]
+        )
 
     # sale_line = self.env['sale.order.line'].create({
     #                 'order_id': sale_order_origin.id,
