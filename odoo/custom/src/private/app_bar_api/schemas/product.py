@@ -13,6 +13,8 @@ class Product2(BaseModel):
     name: str
     categ: str
     price: float
+    image: bytes
+    # desc: str
 
 
 class ProductLine(BaseModel):

@@ -77,8 +77,8 @@ async def create_order(env: Annotated[Environment, Depends(odoo_env)], order_dat
     """
     
     try:
-        if not Order.validate_model(order_data):
-            raise ValidationError('Invalid order data')
+        # if not Order.validate_model(order_data):
+        #     raise ValidationError('Invalid order data')
         
         new_order = insert_order(env, order_data)
         
