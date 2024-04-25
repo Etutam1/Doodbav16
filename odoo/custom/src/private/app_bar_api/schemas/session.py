@@ -7,3 +7,4 @@ class Session(BaseModel):
     config_id: int
     sequence_number: int
     login_number: int
+   

@@ -14,7 +14,7 @@ class Product2(BaseModel):
     categ: str
     price: float
     image: bytes
-    # desc: str
+    desc: str
 
 
 class ProductLine(BaseModel):
