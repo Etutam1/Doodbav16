@@ -77,10 +77,13 @@ async def create_order(env: Annotated[Environment, Depends(odoo_env)], order_dat
     """
     
     try:
+        
+        pos_session = get_session(env)
+         
         # if not Order.validate_model(order_data):
         #     raise ValidationError('Invalid order data')
         
-        new_order = insert_order(env, order_data)
+        new_order = insert_order(env, pos_session, order_data)
         
         if not new_order:
             raise HTTPException(status_code=400, detail="Failed to create order")
@@ -92,38 +95,38 @@ async def create_order(env: Annotated[Environment, Depends(odoo_env)], order_dat
     except ValidationError as e:
         raise HTTPException(status_code=400, detail=f"Invalid order data: {str(e)}")
     except HTTPException as e:
-         raise HTTPException(status_code=400, detail=f"Failed to create order: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Failed to create order: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to create order: {str(e)}")
     
 
-def insert_order(env, order):
+def insert_order(env, session, order):
     """
     Inserts an order into the Point of Sale (POS) system.
 
     This function takes in the environment dictionary and an order object as parameters. 
     It performs the following steps:
 
-    1. Retrieves the current open or opening control session from the environment using the 'get_session' function.
-    2. Generates a unique reference for the order using the '_generate_unique_ref' function.
-    3. Calculates the sequence number for the order using the 'calculate_sequence_number' function.
-    4. Retrieves the Point of Sale (POS) information for the session using the 'get_pos_info' function.
-    5. Formats the current datetime using the 'get_formated_datetime' function.
-    6. Creates a new order in the POS system using the 'pos.order' model and the provided data.
+    1. Generates a unique reference for the order using the '_generate_unique_ref' function.
+    2. Calculates the sequence number for the order using the 'calculate_sequence_number' function.
+    3. Retrieves the Point of Sale (POS) information for the session using the 'get_pos_info' function.
+    4. Formats the current datetime using the 'get_formated_datetime' function.
+    5. Creates a new order in the POS system using the 'pos.order' model and the provided data.
 
     Parameters:
     - env (dict): The environment dictionary containing session information and methods.
+    - session(Session): The current open or opening control session from the environment.
     - order (Order): The order object containing the order details.
 
     Returns:
     - int: The ID of the newly created order in the POS system.
     """
-    session = get_session(env)
     sequence = env["ir.sequence"].next_by_code("pos.order.pruebas")
     session.sequence_number = calculate_sequence_number(env, session)
     current_datetime = get_formated_datetime()
     pos_info = get_pos_info(env, session.config_id)
     ref = _generate_unique_ref(session)
+    
     return (
         env["pos.order"]
         .sudo()
@@ -172,6 +175,7 @@ def insert_lines(env, order_data, new_order):
     """
     for line in order_data.products:
         sequence_number = env["ir.sequence"].next_by_code("pos.order.line.pruebas")
+        
         order_line = {
                 "product_id": line.product_id,
                 "order_id": new_order.id,
@@ -184,6 +188,7 @@ def insert_lines(env, order_data, new_order):
                 "create_date": new_order.create_date,
                 "write_date": new_order.write_date,
             }
+        
         if not env["pos.order.line"].create([order_line]):
             raise HTTPException(status_code=400, detail=f"Failed to insert order line")
 
