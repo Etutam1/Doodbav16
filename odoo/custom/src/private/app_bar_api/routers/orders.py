@@ -6,6 +6,7 @@ from odoo.addons.fastapi.dependencies import odoo_env
 from ..schemas.order import Order
 from ..schemas.session import Session
 from pydantic import ValidationError
+
 order_router = APIRouter(tags=["orders"])
 
 
@@ -145,8 +146,8 @@ def insert_order(env, session, order):
                     "date_order": order.date_order,
                     "create_date": current_datetime,
                     "write_date": current_datetime,
-                    "x_client_phone": order.client_phone,
-                    "x_notes": order.notes,
+                    "client_phone": order.client_phone,
+                    "notes": order.notes,
                 }
             ]
         )
