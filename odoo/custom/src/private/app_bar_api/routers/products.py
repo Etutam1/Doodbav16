@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, List
 from fastapi import APIRouter, Depends, HTTPException
 from odoo.api import Environment
 from odoo.addons.fastapi.dependencies import odoo_env
@@ -8,15 +8,8 @@ import wdb
 product_router = APIRouter(tags=["products"], responses={404: {"message": "Not Found"}})
 
 
-@product_router.get(
-    "/products",
-    response_model=list[Product],
-    response_model_exclude_unset=True,
-    status_code=200,
-)
-async def get_products(
-    env: Annotated[Environment, Depends(odoo_env)],
-) -> list[Product]:
+@product_router.get("/products",response_model=List[Product],response_model_exclude_unset=True,status_code=200,)
+async def get_products(env: Annotated[Environment, Depends(odoo_env)],) -> List[Product]:
     """
     Get a list of products.
 
@@ -33,7 +26,7 @@ async def get_products(
     return search_products(env)
 
 
-def search_products(env) -> list[Product]:
+def search_products(env) -> List[Product]:
     """
     Searches for products in the Odoo environment.
 
@@ -78,7 +71,7 @@ Raises:
     return search_products2(env)
 
 
-def search_products2(env) -> list[Product2]:
+def search_products2(env) -> List[Product2]:
     """
     Searches for products available in the point of sale system and constructs a list of Product2 objects.
 
@@ -150,7 +143,6 @@ def get_image(product):
              a bytes object or is missing.
     """
     
-    encoded_image= bytes([0])
-    if isinstance(product["image_512"], bytes):
-        encoded_image=product["image_512"]
-    return encoded_image
+    if not isinstance(product["image_512"], bytes):
+        product["image_512"] = bytes([0])
+    return product["image_512"]
